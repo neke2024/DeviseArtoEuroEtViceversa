@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Convertisseur de Devise</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 50%, #191654 100%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(245, 245, 220, 0.377);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            min-height: 300px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1.5px 4px rgba(0, 0, 0, 0.10);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #191654;
+            font-size: 2rem;
+        }
+
+        input,
+        select,
+        button {
+            padding: 15px;
+            font-size: 1rem;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #0a009b;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        #result {
+            margin: 20px 0;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            color: #191654;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Media Queries pour la responsivité */
+
+        /* Tablettes */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .container {
+                padding: 25px 20px;
+                margin: 0 10px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 25px;
+            }
+
+            input,
+            select,
+            button {
+                padding: 14px;
+                font-size: 0.95rem;
+            }
+
+            #result {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Smartphones */
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+                margin: 0 5px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 20px;
+            }
+
+            input,
+            select,
+            button {
+                padding: 12px;
+                font-size: 0.9rem;
+                margin: 8px 0;
+            }
+
+            #result {
+                font-size: 1.1rem;
+                margin: 15px 0;
+                padding: 0 10px;
+            }
+        }
+
+        /* Très petits écrans */
+        @media screen and (max-width: 320px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            input,
+            select,
+            button {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+
+            #result {
+                font-size: 1rem;
+            }
+        }
+
+        /* Grands écrans */
+        @media screen and (min-width: 1200px) {
+            body {
+                padding: 50px;
+            }
+
+            .container {
+                padding: 40px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            input,
+            select,
+            button {
+                padding: 16px;
+                font-size: 1.1rem;
+            }
+
+            #result {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Convertisseur de Devise</h1>
+        <input type="number" id="montant" placeholder="Montant" step="0.01">
+        <select id="currency">
+            <option value="ariary">Ariary (MGA) → Euro (EUR)</option>
+            <option value="euro">Euro (EUR) → Ariary (MGA)</option>
+        </select>
+        <button onclick="convert()">Convertir</button>
+        <div id="result"></div>
+    </div>
+
+
+    <script>
+        async function convert() {
+            const montant = parseFloat(document.getElementById('montant').value);
+            const resultDiv = document.getElementById('result');
+            const select = document.getElementById("currency");
+
+            if (!montant || montant <= 0) {
+                resultDiv.textContent = "Entre un montant valide.";
+                return;
+            }
+
+            try {
+                const response = await fetch('https://open.er-api.com/v6/latest/EUR');
+                const data = await response.json();
+                const tauxMGA = data.rates.MGA;
+
+                if (!tauxMGA) {
+                    resultDiv.textContent = "Taux de conversion indisponible.";
+                    return;
+                }
+
+                if (select.value === "ariary") {
+                    const euro = montant / tauxMGA;
+                    resultDiv.textContent = `${montant.toLocaleString()} Ar ≈ ${euro.toFixed(2)} €`;
+                } else {
+                    const ariary = montant * tauxMGA;
+                    resultDiv.textContent = `${montant.toFixed(2)} € ≈ ${ariary.toLocaleString()} Ar`;
+                }
+
+            } catch (error) {
+                console.error("Erreur API :", error);
+                resultDiv.textContent = "Erreur de connexion à l'API.";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
