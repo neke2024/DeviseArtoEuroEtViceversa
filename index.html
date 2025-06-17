@@ -238,10 +238,10 @@
 
                 if (select.value === "ariary") {
                     const euro = montant / tauxMGA;
-                    resultDiv.textContent = `${montant.toLocaleString()} Ar ≈ ${euro.toFixed(2).toLocaleString('fr-FR')} €`;
+                    resultDiv.textContent = `${montant.toLocaleString()} Ar ≈ ${euro.toFixed(2).toLocaleString('fr-FR').toLocaleString()} €`;
                 } else {
                     const ariary = montant * tauxMGA;
-                    resultDiv.textContent = `${montant.toFixed(2).toLocaleString('fr-FR')} € ≈ ${ariary.toLocaleString()} Ar`;
+                    resultDiv.textContent = `${montant.toFixed(2).toLocaleString('fr-FR').toLocaleString()} € ≈ ${ariary.toLocaleString()} Ar`;
                 }
 
             } catch (error) {
